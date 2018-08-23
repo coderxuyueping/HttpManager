@@ -57,29 +57,64 @@ public class HttpManager {
         };
     }
 
+    /**
+     * 线程调度由调用者决定
+     * * @param url
+     * @return
+     */
+
     public Observable<ResponseBody> executeGet(String url) {
+        return RetrofitHelper.getInstance().getService()
+                .executeGet(url);
+    }
+
+    public Observable<ResponseBody> executeGet(String url, Map<String, String> parameters) {
+        return RetrofitHelper.getInstance().getService()
+                .executeGet(url, parameters);
+    }
+
+    public Observable<ResponseBody> executePost(String url) {
+        return RetrofitHelper.getInstance().getService()
+                .executePost(url);
+    }
+
+    public Observable<ResponseBody> executePost(String url, Map<String, String> parameters) {
+        return RetrofitHelper.getInstance().getService()
+                .executePost(url, parameters);
+    }
+
+
+    /**
+     * 处理了线程调度
+     * @param url
+     * @return
+     */
+    public Observable<ResponseBody> asyncGet(String url) {
         return RetrofitHelper.getInstance().getService()
                 .executeGet(url)
                 .compose(this.<ResponseBody>schedulersTransformer());
     }
 
-    public Observable<ResponseBody> executeGet(String url, Map<String, String> parameters) {
+    public Observable<ResponseBody> asyncGet(String url, Map<String, String> parameters) {
         return RetrofitHelper.getInstance().getService()
                 .executeGet(url, parameters)
                 .compose(this.<ResponseBody>schedulersTransformer());
     }
 
-    public Observable<ResponseBody> executePost(String url) {
+    public Observable<ResponseBody> asyncPost(String url) {
         return RetrofitHelper.getInstance().getService()
                 .executePost(url)
                 .compose(this.<ResponseBody>schedulersTransformer());
     }
 
-    public Observable<ResponseBody> executePost(String url, Map<String, String> parameters) {
+    public Observable<ResponseBody> asyncPost(String url, Map<String, String> parameters) {
         return RetrofitHelper.getInstance().getService()
                 .executePost(url, parameters)
                 .compose(this.<ResponseBody>schedulersTransformer());
     }
+
+
+
 
     /**
      * 加密的post
@@ -88,7 +123,7 @@ public class HttpManager {
      * @param params
      * @return
      */
-    public Observable<ResponseBody> executeAesPost(String url, Map<String, String> params) {
+    public Observable<ResponseBody> asyncAesPost(String url, Map<String, String> params) {
         byte[] bytes = AesEncrypt.getInstance().encrypt(key.getBytes(), new Gson().toJson(params));
         RequestBody body = FormBody.create(MediaType.parse("application/x-www-form-urlencoded"), bytes);
         return RetrofitHelper.getInstance().getService()

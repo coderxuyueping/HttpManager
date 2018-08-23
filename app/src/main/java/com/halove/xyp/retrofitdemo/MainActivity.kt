@@ -11,6 +11,7 @@ import com.halove.xyp.apilibrary.observer.ObjectObserver
 import com.halove.xyp.apilibrary.RxLifeCycle
 import com.halove.xyp.apilibrary.upload.ProgressObserver
 import com.halove.xyp.apilibrary.utils.FileUtil
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.ResponseBody
 import java.io.File
@@ -31,9 +32,12 @@ class MainActivity : AppCompatActivity() {
         val map = ArrayMap<String, String>()
         map.put("part", "1")
         map.put("page", "1")
-        //解析jsonObject
+        //解析jsonObject,请求跟回调都是在io线程
         HttpManager.getInstance()
                 .executeGet("http://room.1024.com/live/part_list_11.aspx", map)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe(object : ObjectObserver<RoomList>(RoomList::class.java){
                     override fun onSuccess(t: RoomList?) {
                         //todo 处理数据
@@ -51,7 +55,7 @@ class MainActivity : AppCompatActivity() {
      * 返回jsonArray
      */
     fun getArray(view: View){
-        HttpManager.getInstance().executeGet("http://room.1024.com/live/get_viewinfo_new.aspx")
+        HttpManager.getInstance().asyncGet("http://room.1024.com/live/get_viewinfo_new.aspx")
                 .subscribe(object : ArrayObserver<Title>(Array<Title>::class.java){
                     override fun onSuccess(t: MutableList<Title>?) {
                         //todo 处理数据
@@ -120,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
         //公共参数通过拼接集合的形式
         HttpManager.getInstance().addCommonParams(params)
-                .executeAesPost("url", params)
+                .asyncAesPost("url", params)
                 .subscribe(object : ObjectObserver<ResponseBody>(ResponseBody::class.java){
                     override fun onSuccess(t: ResponseBody?) {
                     }
@@ -132,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         //开启拦截器，在拦截器里添加公共参数
         HttpManager.getInstance().addQueryParameter()
-                .executeAesPost("url", params)
+                .asyncAesPost("url", params)
                 .subscribe(object : ObjectObserver<ResponseBody>(ResponseBody::class.java){
                     override fun onSuccess(t: ResponseBody?) {
                     }

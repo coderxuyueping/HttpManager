@@ -34,10 +34,12 @@ public abstract class SimpleObserver<T> implements Observer<ResponseBody> {
     @Override
     public void onSubscribe(Disposable d) {
         RxLifeCycle.getInstance().addDisposable(d);
+        Log.d("xuyueping", "onSubscribe当前线程" + Thread.currentThread());
     }
 
     @Override
     public void onNext(ResponseBody responseBody) {
+        Log.d("xuyueping", "onNext当前线程" + Thread.currentThread());
         String res = "";
         try {
             res = responseBody.string();
