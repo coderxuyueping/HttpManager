@@ -185,6 +185,18 @@ public class HttpManager {
         return this;
     }
 
+    public HttpManager addQueryParameter(Map<String, String> params) throws NullPointerException {
+        RetrofitHelper.getInstance()
+                .addQueryParameter(params);
+        return this;
+    }
+
+    public HttpManager addHeader(Map<String, String> params) throws NullPointerException {
+        RetrofitHelper.getInstance()
+                .addHeader(params);
+        return this;
+    }
+
     //添加公共参数,直接在Map里添加，不使用拦截器
     public HttpManager addCommonParams(Map<String, String> params) {
         if(params == null)
@@ -192,6 +204,12 @@ public class HttpManager {
         params.put("deviceType", "android");
 //        params.put("deviceid", AppUtil.getDeviceId(AppStatus.getInstance()));
 //        params.put("version", AppUtil.getVersionName(AppStatus.getInstance()));
+        return this;
+    }
+
+    //开启日志
+    public HttpManager openLog(boolean open){
+        RetrofitHelper.getInstance().openLog(open);
         return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.halove.xyp.apilibrary;
 
+import android.util.ArrayMap;
 import android.util.Log;
 
 
@@ -7,6 +8,7 @@ import com.halove.xyp.apilibrary.download.ProgressResponseBody;
 import com.halove.xyp.apilibrary.upload.ProgressObserver;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.HttpUrl;
@@ -33,6 +35,11 @@ public class RetrofitHelper {
     private boolean addDownloadInterceptor;
     private ProgressObserver observer;
 
+    private boolean openLog;
+
+    private Map<String, String> queryParameter;
+    private Map<String, String> headParameter;
+
 
     private RetrofitHelper() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
@@ -40,7 +47,7 @@ public class RetrofitHelper {
                 .writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
                 .readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);
 
-        if (BuildConfig.DEBUG) {//如果当前是debug模式就开启日志过滤器
+        if (openLog) {//如果当前是debug模式就开启日志过滤器
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             builder.addInterceptor(loggingInterceptor);
@@ -58,9 +65,12 @@ public class RetrofitHelper {
                 HttpUrl.Builder authorizedUrlBuilder = oldRequest.url()
                         .newBuilder()
                         .scheme(oldRequest.url().scheme())
-                        .host(oldRequest.url().host())
-                        .addQueryParameter("time", "12:20")
-                        .addQueryParameter("type", "android");
+                        .host(oldRequest.url().host());
+                for(Map.Entry<String, String> entry : queryParameter.entrySet()){
+                    Log.d("entry", "key:"+entry.getKey()+"||value:"+entry.getValue());
+                    authorizedUrlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+                }
+
 
                 // 新的请求
                 Request newRequest = oldRequest.newBuilder()
@@ -87,7 +97,10 @@ public class RetrofitHelper {
                 Request originalRequest = chain.request();
                 Request.Builder builder = originalRequest.newBuilder();
                 //设置具体的header内容
-                builder.header("timestamp", System.currentTimeMillis() + "");
+                for(Map.Entry<String, String> entry : headParameter.entrySet()){
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+
 
                 Request.Builder requestBuilder =
                         builder.method(originalRequest.method(), originalRequest.body());
@@ -145,13 +158,51 @@ public class RetrofitHelper {
         return retrofit;
     }
 
-    public RetrofitHelper addQueryParameter() {
+    public RetrofitHelper addQueryParameter(Map<String, String> params) throws NullPointerException {
         addQueryParameter = true;
+        if(queryParameter == null)
+            queryParameter = new ArrayMap<>();
+        else
+            queryParameter.clear();
+        if(params == null)
+            throw new NullPointerException("params can not be null");
+        else
+            queryParameter.putAll(params);
         return this;
     }
 
-    public RetrofitHelper addHeader() {
+    public RetrofitHelper addHeader(Map<String, String> params) throws NullPointerException {
         addHeader = true;
+        if(headParameter == null)
+            headParameter = new ArrayMap<>();
+        else
+            headParameter.clear();
+        if(params == null)
+            throw new NullPointerException("params can not be null");
+        else
+            headParameter.putAll(params);
+        return this;
+    }
+
+    /**
+     * 添加默认参数
+     * @return
+     */
+    public RetrofitHelper addQueryParameter(){
+        addQueryParameter = true;
+        if(queryParameter == null)
+            queryParameter = new ArrayMap<>();
+        else
+            queryParameter.clear();
+        return this;
+    }
+
+    public RetrofitHelper addHeader(){
+        addHeader = true;
+        if(headParameter == null)
+            headParameter = new ArrayMap<>();
+        else
+            headParameter.clear();
         return this;
     }
 
@@ -161,5 +212,9 @@ public class RetrofitHelper {
             this.observer = observer;
         }
         return this;
+    }
+
+    public void openLog(boolean open){
+        this.openLog = open;
     }
 }
