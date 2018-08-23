@@ -50,6 +50,14 @@ public abstract class SimpleObserver<T> implements Observer<ResponseBody> {
             return;
         }
 
+        parseJson(res);
+    }
+
+    /**
+     * 默认使用基础BaseResponse去解析外层json，如果有其他需求，可以重写该方法
+     * @param res
+     */
+    protected void parseJson(String res){
         BaseResponse baseResponse = GsonUtil.getObject(res, BaseResponse.class);
         //如果code跟服务器定下的成功返回不一致
         if(!ApiConstant.CODE_SUCCESS.equals(baseResponse.getCode())){
@@ -67,6 +75,8 @@ public abstract class SimpleObserver<T> implements Observer<ResponseBody> {
             onDataSuccess(list);
         }
     }
+
+
 
     /**
      * 內部释放了订阅，但是在四大组件的生命周期最好手动释放，防止请求未结束的情况
