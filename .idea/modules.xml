@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ApiLibrary/ApiLibrary.iml" filepath="$PROJECT_DIR$/ApiLibrary/ApiLibrary.iml" />
-      <module fileurl="file://$PROJECT_DIR$/RetrofitDemo.iml" filepath="$PROJECT_DIR$/RetrofitDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HttpManager.iml" filepath="$PROJECT_DIR$/HttpManager.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

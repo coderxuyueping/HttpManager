@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         map.put("page", "1")
         //解析jsonObject
         HttpManager.getInstance()
-                .executeGet("http://room.9158.com/live/part_list_11.aspx", map)
+                .executeGet("http://room.1024.com/live/part_list_11.aspx", map)
                 .subscribe(object : ObjectObserver<RoomList>(RoomList::class.java){
                     override fun onSuccess(t: RoomList?) {
                         //todo 处理数据
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
      * 返回jsonArray
      */
     fun getArray(view: View){
-        HttpManager.getInstance().executeGet("http://room.9158.com/live/get_viewinfo_new.aspx")
+        HttpManager.getInstance().executeGet("http://room.1024.com/live/get_viewinfo_new.aspx")
                 .subscribe(object : ArrayObserver<Title>(Array<Title>::class.java){
                     override fun onSuccess(t: MutableList<Title>?) {
                         //todo 处理数据
@@ -63,6 +63,8 @@ class MainActivity : AppCompatActivity() {
                     }
 
                 })
+
+        RxLifeCycle.getInstance().unDisposable()
     }
 
 
@@ -70,7 +72,7 @@ class MainActivity : AppCompatActivity() {
      * 带进度条的下载
      */
     fun download(view: View){
-        HttpManager.getInstance().downLoadFile("http://mobile.9158.com/9158ChatRoom.apk",
+        HttpManager.getInstance().downLoadFile("http://mobile.1024.com/1024ChatRoom.apk",
                 FileUtil.getCacheFileByType(this, "apk_file").absolutePath
                 , "9158.apk", object : ProgressObserver(true){
 
